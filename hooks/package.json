@@ -28,5 +28,15 @@
     "express": "^5.2.1",
     "pg": "^8.16.3",
     "prisma": "^7.1.0"
+  },
+  "overrides": {
+    "@prisma/get-platform": "^7.1.0",
+    "@prisma/debug": "^7.1.0",
+    "@prisma/query-plan-executor": "^7.1.0",
+    "@prisma/dev": {
+      "@prisma/get-platform": "^7.1.0",
+      "@prisma/debug": "^7.1.0",
+      "@prisma/query-plan-executor": "^7.1.0"
+    }
   }
 }
