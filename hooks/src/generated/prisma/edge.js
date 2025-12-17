@@ -128,7 +128,13 @@ exports.Prisma.AvailableTriggerScalarFieldEnum = {
 
 exports.Prisma.ZapRunScalarFieldEnum = {
   id: 'id',
-  zapId: 'zapId'
+  zapId: 'zapId',
+  metadata: 'metadata'
+};
+
+exports.Prisma.ZapRunOutboxScalarFieldEnum = {
+  id: 'id',
+  zapRunId: 'zapRunId'
 };
 
 exports.Prisma.SortOrder = {
@@ -136,9 +142,19 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 
@@ -149,7 +165,8 @@ exports.Prisma.ModelName = {
   Action: 'Action',
   AvailableAction: 'AvailableAction',
   AvailableTrigger: 'AvailableTrigger',
-  ZapRun: 'ZapRun'
+  ZapRun: 'ZapRun',
+  ZapRunOutbox: 'ZapRunOutbox'
 };
 /**
  * Create the Client
@@ -159,10 +176,10 @@ const config = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id       Int    @id @default(autoincrement())\n  name     String\n  email    String @unique\n  password String\n}\n\nmodel Zap {\n  id        String   @id @default(uuid())\n  triggerId String\n  trigger   Trigger?\n  actions   Action[]\n  zapRuns   ZapRun[]\n}\n\nmodel Trigger {\n  id        String           @id @default(uuid())\n  zapId     String           @unique\n  triggerId String           @unique\n  type      AvailableTrigger @relation(fields: [triggerId], references: [id])\n  zap       Zap              @relation(fields: [zapId], references: [id])\n}\n\nmodel Action {\n  id       String          @id @default(uuid())\n  zapId    String\n  zap      Zap             @relation(fields: [zapId], references: [id])\n  actionId String\n  type     AvailableAction @relation(fields: [actionId], references: [id])\n}\n\nmodel AvailableAction {\n  id      String   @id @default(uuid())\n  name    String\n  actions Action[]\n}\n\nmodel AvailableTrigger {\n  id       String    @id @default(uuid())\n  name     String\n  triggers Trigger[]\n}\n\nmodel ZapRun {\n  id    String @id @default(uuid())\n  zapId String\n  zap   Zap    @relation(fields: [zapId], references: [id])\n}\n"
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id       Int    @id @default(autoincrement())\n  name     String\n  email    String @unique\n  password String\n}\n\nmodel Zap {\n  id        String   @id @default(uuid())\n  triggerId String\n  trigger   Trigger?\n  actions   Action[]\n  zapRuns   ZapRun[]\n}\n\nmodel Trigger {\n  id        String           @id @default(uuid())\n  zapId     String           @unique\n  triggerId String           @unique\n  type      AvailableTrigger @relation(fields: [triggerId], references: [id])\n  zap       Zap              @relation(fields: [zapId], references: [id])\n}\n\nmodel Action {\n  id       String          @id @default(uuid())\n  zapId    String\n  zap      Zap             @relation(fields: [zapId], references: [id])\n  actionId String\n  type     AvailableAction @relation(fields: [actionId], references: [id])\n}\n\nmodel AvailableAction {\n  id      String   @id @default(uuid())\n  name    String\n  actions Action[]\n}\n\nmodel AvailableTrigger {\n  id       String    @id @default(uuid())\n  name     String\n  triggers Trigger[]\n}\n\nmodel ZapRun {\n  id           String        @id @default(uuid())\n  zapId        String\n  metadata     Json\n  zap          Zap           @relation(fields: [zapId], references: [id])\n  zapRunOutbox ZapRunOutbox?\n}\n\nmodel ZapRunOutbox {\n  id       String @id @default(uuid())\n  zapRunId String @unique\n  zapRun   ZapRun @relation(fields: [zapRunId], references: [id])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Zap\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"trigger\",\"kind\":\"object\",\"type\":\"Trigger\",\"relationName\":\"TriggerToZap\"},{\"name\":\"actions\",\"kind\":\"object\",\"type\":\"Action\",\"relationName\":\"ActionToZap\"},{\"name\":\"zapRuns\",\"kind\":\"object\",\"type\":\"ZapRun\",\"relationName\":\"ZapToZapRun\"}],\"dbName\":null},\"Trigger\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"object\",\"type\":\"AvailableTrigger\",\"relationName\":\"AvailableTriggerToTrigger\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"TriggerToZap\"}],\"dbName\":null},\"Action\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"ActionToZap\"},{\"name\":\"actionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"object\",\"type\":\"AvailableAction\",\"relationName\":\"ActionToAvailableAction\"}],\"dbName\":null},\"AvailableAction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actions\",\"kind\":\"object\",\"type\":\"Action\",\"relationName\":\"ActionToAvailableAction\"}],\"dbName\":null},\"AvailableTrigger\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggers\",\"kind\":\"object\",\"type\":\"Trigger\",\"relationName\":\"AvailableTriggerToTrigger\"}],\"dbName\":null},\"ZapRun\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"ZapToZapRun\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Zap\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"trigger\",\"kind\":\"object\",\"type\":\"Trigger\",\"relationName\":\"TriggerToZap\"},{\"name\":\"actions\",\"kind\":\"object\",\"type\":\"Action\",\"relationName\":\"ActionToZap\"},{\"name\":\"zapRuns\",\"kind\":\"object\",\"type\":\"ZapRun\",\"relationName\":\"ZapToZapRun\"}],\"dbName\":null},\"Trigger\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"object\",\"type\":\"AvailableTrigger\",\"relationName\":\"AvailableTriggerToTrigger\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"TriggerToZap\"}],\"dbName\":null},\"Action\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"ActionToZap\"},{\"name\":\"actionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"object\",\"type\":\"AvailableAction\",\"relationName\":\"ActionToAvailableAction\"}],\"dbName\":null},\"AvailableAction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actions\",\"kind\":\"object\",\"type\":\"Action\",\"relationName\":\"ActionToAvailableAction\"}],\"dbName\":null},\"AvailableTrigger\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggers\",\"kind\":\"object\",\"type\":\"Trigger\",\"relationName\":\"AvailableTriggerToTrigger\"}],\"dbName\":null},\"ZapRun\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"zap\",\"kind\":\"object\",\"type\":\"Zap\",\"relationName\":\"ZapToZapRun\"},{\"name\":\"zapRunOutbox\",\"kind\":\"object\",\"type\":\"ZapRunOutbox\",\"relationName\":\"ZapRunToZapRunOutbox\"}],\"dbName\":null},\"ZapRunOutbox\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapRunId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zapRun\",\"kind\":\"object\",\"type\":\"ZapRun\",\"relationName\":\"ZapRunToZapRunOutbox\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
   getRuntime: async () => require('./query_compiler_bg.js'),
